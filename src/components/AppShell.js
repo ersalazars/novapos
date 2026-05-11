@@ -12,7 +12,7 @@ export function AppShell(content) {
             Nova POS
           </strong>
 
-          <span class="muted-navbar">
+          <span class="muted">
             Touch Sales Platform
           </span>
         </div>

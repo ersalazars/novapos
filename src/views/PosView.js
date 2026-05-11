@@ -29,13 +29,10 @@ export function PosView() {
       <section class="pos-layout">
         <div class="sales-area">
           <div class="sales-toolbar">
-            <div class="titulo_venta">
-              <div class="titulo_venta_contenido">
-                <div class="icono_venta"></div>
-                <h1>Nueva venta</h1>
-              </div>
+            <div>
+              <h1>Nueva venta</h1>
               <p class="muted">
-                Cliente act: <strong>${state.customer.name}</strong>
+                Cliente actual: <strong>${state.customer.name}</strong>
                 · Almacén: <strong>${state.activeProfile?.id_almacen || 1}</strong>
               </p>
             </div>
