@@ -29,7 +29,7 @@ export function AppShell(content) {
           </strong>
 
           <div class="muted muted-titulo">
-            Touch Sales Platform
+            ESDM Punto de venta
           </div>
 
           <div class="muted muted-hora-titulo small-text">
