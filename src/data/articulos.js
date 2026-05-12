@@ -1,6 +1,7 @@
 export const articulos = [
   {
     id: 1,
+    id_categoria: 1,
     descripcion: 'BULTOS DE AZÚCAR',
     id_usuario: 1,
     usuario: 'DESARROLLO ESDM',
@@ -10,6 +11,7 @@ export const articulos = [
   },
   {
     id: 2,
+    id_categoria: 1,
     descripcion: 'BOLSA DE AZÚCAR 1 KG',
     id_usuario: 1,
     usuario: 'DESARROLLO ESDM',
@@ -51,7 +53,7 @@ export const articulosPrecios = [
   {
     id_precio: 5,
     id_articulo: 2,
-    cant_minIMA: 10,
+    cant_minIMA: 11,
     cant_maxIMA: 50,
     precio_unitario: 20.00
   }
@@ -72,8 +74,6 @@ export const articulosAlmacenes = [
   }
 ];
 
-// Demo temporal: hasta que exista historial real, esto simula los artículos más vendidos.
-// Cuando conectes backend, esto saldría de tr_ventas_detalle agrupando por id_articulo.
 export const articulosMasVendidos = [
   {
     id_articulo: 2,
