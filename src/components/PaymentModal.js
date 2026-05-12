@@ -1,5 +1,5 @@
-import { getTotals } from '../store/posStore.js';
-import { money } from '../utils/format.js';
+import { getTotals } from "../store/posStore.js";
+import { money } from "../utils/format.js";
 
 export function PaymentModal() {
   const totals = getTotals();
@@ -28,6 +28,11 @@ export function PaymentModal() {
               <input type="radio" name="paymentMethod" value="tarjeta">
               <span>Tarjeta</span>
             </label>
+
+            <label class="method-card">
+              <input type="radio" name="paymentMethod" value="vales">
+              <span>Vales</span>
+            </label>
           </div>
 
           <div id="cashFields">
@@ -46,6 +51,16 @@ export function PaymentModal() {
               <input class="input input-lg" id="cardOperationNumber" placeholder="Ej. 839201">
             </label>
           </div>
+
+          <div id="valFields" class="hidden">
+            <label class="field">
+              <span>Codigo de vale</span>
+              <input class="input input-lg" id="CodeOperationVale" placeholder="Ej. 123-165-987">
+            </label>
+          </div>
+
+
+
         </div>
 
         <footer class="modal-footer">

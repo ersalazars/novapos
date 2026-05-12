@@ -1,13 +1,13 @@
-import { AppShell } from '../components/AppShell.js';
-import { ProductGrid } from '../components/ProductGrid.js';
-import { CategoryGrid } from '../components/CategoryGrid.js';
-import { CartPanel } from '../components/CartPanel.js';
-import { CustomerModal } from '../components/CustomerModal.js';
-import { PaymentModal } from '../components/PaymentModal.js';
+import { AppShell } from "../components/AppShell.js";
+import { ProductGrid } from "../components/ProductGrid.js";
+import { CategoryGrid } from "../components/CategoryGrid.js";
+import { CartPanel } from "../components/CartPanel.js";
+import { CustomerModal } from "../components/CustomerModal.js";
+import { PaymentModal } from "../components/PaymentModal.js";
 
-import { getProducts, getCategories } from '../services/productService.js';
-import { getCustomers } from '../services/customerService.js';
-import { createSale } from '../services/saleService.js';
+import { getProducts, getCategories } from "../services/productService.js";
+import { getCustomers } from "../services/customerService.js";
+import { createSale } from "../services/saleService.js";
 
 import {
   state,
@@ -19,10 +19,10 @@ import {
   setCustomer,
   setSearch,
   updateCartQty,
-} from '../store/posStore.js';
+} from "../store/posStore.js";
 
-import { money } from '../utils/format.js';
-import { showToast } from '../utils/toast.js';
+import { money } from "../utils/format.js";
+import { showToast } from "../utils/toast.js";
 
 let productsCache = [];
 let customersCache = [];
@@ -54,6 +54,12 @@ export function PosView() {
               value="${state.search}" 
               placeholder="Buscar artículo por descripción o código..."
             >
+            <div class="upload-container">
+              <input type="file" id="inputFotos" name="fotos" accept="image/*" capture="camera" multiple hidden>
+              <label for="inputFotos" class="btn-camera">
+                <i class="fas fa-camera"></i>
+              </label>
+            </div>
           </div>
 
           <div class="section-label" id="productsTitle">
@@ -74,7 +80,7 @@ export function PosView() {
 
     afterRender() {
       wirePosView();
-    }
+    },
   };
 }
 
@@ -82,114 +88,124 @@ async function wirePosView() {
   await renderMainMenu();
   await loadCustomers();
 
-  document.querySelector('#productSearch').addEventListener('input', async (event) => {
-    setSearch(event.target.value);
+  document
+    .querySelector("#productSearch")
+    .addEventListener("input", async (event) => {
+      setSearch(event.target.value);
 
-    if (state.search.trim()) {
+      if (state.search.trim()) {
+        selectedCategory = null;
+        await renderSearchResults();
+        return;
+      }
+
+      await renderMainMenu();
+    });
+
+  document
+    .querySelector("#productGridContainer")
+    .addEventListener("click", async (event) => {
+      const categoryButton = event.target.closest("[data-category-id]");
+      const productButton = event.target.closest("[data-add-product]");
+
+      if (categoryButton) {
+        selectedCategory = Number(categoryButton.dataset.categoryId);
+        setSearch("");
+        document.querySelector("#productSearch").value = "";
+        await renderProductsByCategory();
+        return;
+      }
+
+      if (productButton) {
+        const product = productsCache.find((item) => {
+          return item.id === Number(productButton.dataset.addProduct);
+        });
+
+        addToCart(product, 1);
+      }
+    });
+
+  document
+    .querySelector("#productsTitle")
+    .addEventListener("click", async (event) => {
+      const backButton = event.target.closest("#btnBackCategories");
+
+      if (!backButton) return;
+
       selectedCategory = null;
-      await renderSearchResults();
-      return;
-    }
+      setSearch("");
+      document.querySelector("#productSearch").value = "";
+      await renderMainMenu();
+    });
 
-    await renderMainMenu();
-  });
+  document
+    .querySelector(".cart-panel")
+    .addEventListener("click", async (event) => {
+      const dec = event.target.closest("[data-dec]");
+      const inc = event.target.closest("[data-inc]");
+      const remove = event.target.closest("[data-remove]");
 
-  document.querySelector('#productGridContainer').addEventListener('click', async (event) => {
-    const categoryButton = event.target.closest('[data-category-id]');
-    const productButton = event.target.closest('[data-add-product]');
+      if (dec) {
+        const item = state.cart.find((cartItem) => {
+          return cartItem.product.id === Number(dec.dataset.dec);
+        });
 
-    if (categoryButton) {
-      selectedCategory = Number(categoryButton.dataset.categoryId);
-      setSearch('');
-      document.querySelector('#productSearch').value = '';
-      await renderProductsByCategory();
-      return;
-    }
+        if (!item) return;
 
-    if (productButton) {
-      const product = productsCache.find((item) => {
-        return item.id === Number(productButton.dataset.addProduct);
-      });
+        updateCartQty(dec.dataset.dec, item.qty - 1);
+      }
 
-      addToCart(product, 1);
-    }
-  });
+      if (inc) {
+        const item = state.cart.find((cartItem) => {
+          return cartItem.product.id === Number(inc.dataset.inc);
+        });
 
-  document.querySelector('#productsTitle').addEventListener('click', async (event) => {
-    const backButton = event.target.closest('#btnBackCategories');
+        if (!item) return;
 
-    if (!backButton) return;
+        updateCartQty(inc.dataset.inc, item.qty + 1);
+      }
 
-    selectedCategory = null;
-    setSearch('');
-    document.querySelector('#productSearch').value = '';
-    await renderMainMenu();
-  });
+      if (remove) {
+        removeFromCart(remove.dataset.remove);
+      }
+    });
 
-  document.querySelector('.cart-panel').addEventListener('click', async (event) => {
-    const dec = event.target.closest('[data-dec]');
-    const inc = event.target.closest('[data-inc]');
-    const remove = event.target.closest('[data-remove]');
-
-    if (dec) {
-      const item = state.cart.find((cartItem) => {
-        return cartItem.product.id === Number(dec.dataset.dec);
-      });
-
-      if (!item) return;
-
-      updateCartQty(dec.dataset.dec, item.qty - 1);
-    }
-
-    if (inc) {
-      const item = state.cart.find((cartItem) => {
-        return cartItem.product.id === Number(inc.dataset.inc);
-      });
-
-      if (!item) return;
-
-      updateCartQty(inc.dataset.inc, item.qty + 1);
-    }
-
-    if (remove) {
-      removeFromCart(remove.dataset.remove);
-    }
-  });
-
-  document.querySelector('.cart-panel').addEventListener('change', (event) => {
-    const input = event.target.closest('[data-qty]');
+  document.querySelector(".cart-panel").addEventListener("change", (event) => {
+    const input = event.target.closest("[data-qty]");
 
     if (!input) return;
 
     updateCartQty(input.dataset.qty, input.value);
   });
 
-  document.querySelector('#btnClearCart').addEventListener('click', () => {
+  document.querySelector("#btnClearCart").addEventListener("click", () => {
     if (state.cart.length === 0) return;
 
-    if (confirm('¿Limpiar carrito?')) {
+    if (confirm("¿Limpiar carrito?")) {
       clearCart();
     }
   });
 
-  document.querySelector('#btnOpenPayment').addEventListener('click', () => {
-    document.querySelector('#paymentModal').showModal();
+  document.querySelector("#btnOpenPayment").addEventListener("click", () => {
+    document.querySelector("#paymentModal").showModal();
   });
 
-  document.querySelector('#btnChangeCustomer').addEventListener('click', () => {
-    document.querySelector('#customerModal').showModal();
+  document.querySelector("#btnChangeCustomer").addEventListener("click", () => {
+    document.querySelector("#customerModal").showModal();
   });
 
-  document.querySelector('#btnResetCustomer').addEventListener('click', () => {
-    document.querySelector('#customerModal').showModal();
+  document.querySelector("#btnResetCustomer").addEventListener("click", () => {
+    document.querySelector("#customerModal").showModal();
   });
 
-  document.body.addEventListener('click', closeModalHandler);
+  document.body.addEventListener("click", closeModalHandler);
 
-  document.querySelector('#customerSearch').addEventListener('input', renderCustomerList);
+  document
+    .querySelector("#customerSearch")
+    .addEventListener("input", renderCustomerList);
 
-  document.querySelector('#customerList').addEventListener('click', (event) => {
-    const row = event.target.closest('[data-customer-id]');
+  document.querySelector("#customerList").addEventListener("click", (event) => {
+    const row = event.target.closest("[data-customer-id]");
 
     if (!row) return;
 
@@ -198,7 +214,7 @@ async function wirePosView() {
     });
 
     setCustomer(customer);
-    document.querySelector('#customerModal').close();
+    document.querySelector("#customerModal").close();
   });
 
   wirePayment();
@@ -209,19 +225,20 @@ async function renderMainMenu() {
 
   const categories = await getCategories();
 
-  document.querySelector('#productsTitle').textContent = 'Categorías';
+  document.querySelector("#productsTitle").textContent = "Categorías";
 
-  document.querySelector('#productGridContainer').innerHTML = CategoryGrid(categories);
+  document.querySelector("#productGridContainer").innerHTML =
+    CategoryGrid(categories);
 }
 
 async function renderProductsByCategory() {
   productsCache = await getProducts({
-    search: '',
+    search: "",
     categoryId: selectedCategory,
     onlyBestSellers: false,
   });
 
-  document.querySelector('#productsTitle').innerHTML = `
+  document.querySelector("#productsTitle").innerHTML = `
     <div class="products-header-inline">
 
       <button class="back-category-btn" id="btnBackCategories">
@@ -236,9 +253,9 @@ async function renderProductsByCategory() {
     </div>
   `;
 
-  document.querySelector('#productGridContainer').innerHTML = ProductGrid(
+  document.querySelector("#productGridContainer").innerHTML = ProductGrid(
     productsCache,
-    state.activeProfile?.id_almacen || 1
+    state.activeProfile?.id_almacen || 1,
   );
 }
 
@@ -255,7 +272,7 @@ async function renderSearchResults() {
   //   </button>
   //   <span>Resultados de búsqueda</span>
   // `;
-  document.querySelector('#productsTitle').innerHTML = `
+  document.querySelector("#productsTitle").innerHTML = `
     <div class="products-header-inline">
 
       <button class="back-category-btn" id="btnBackCategories">
@@ -270,9 +287,9 @@ async function renderSearchResults() {
     </div>
   `;
 
-  document.querySelector('#productGridContainer').innerHTML = ProductGrid(
+  document.querySelector("#productGridContainer").innerHTML = ProductGrid(
     productsCache,
-    state.activeProfile?.id_almacen || 1
+    state.activeProfile?.id_almacen || 1,
   );
 }
 
@@ -282,20 +299,24 @@ async function loadCustomers() {
 }
 
 async function renderCustomerList() {
-  const search = document.querySelector('#customerSearch')?.value || '';
+  const search = document.querySelector("#customerSearch")?.value || "";
 
   customersCache = await getCustomers(search);
 
-  document.querySelector('#customerList').innerHTML = customersCache.map((customer) => `
+  document.querySelector("#customerList").innerHTML = customersCache
+    .map(
+      (customer) => `
     <button class="customer-row" data-customer-id="${customer.id}">
       <strong>${customer.name}</strong>
       <span>${customer.rfc}</span>
     </button>
-  `).join('');
+  `,
+    )
+    .join("");
 }
 
 function closeModalHandler(event) {
-  const closeButton = event.target.closest('[data-close-modal]');
+  const closeButton = event.target.closest("[data-close-modal]");
 
   if (!closeButton) return;
 
@@ -305,24 +326,26 @@ function closeModalHandler(event) {
 }
 
 function wirePayment() {
-  const form = document.querySelector('#paymentForm');
-  const cashFields = document.querySelector('#cashFields');
-  const cardFields = document.querySelector('#cardFields');
-  const cashReceived = document.querySelector('#cashReceived');
-  const cashChange = document.querySelector('#cashChange');
-  const cardOperationNumber = document.querySelector('#cardOperationNumber');
-  const paymentModal = document.querySelector('#paymentModal');
+  const form = document.querySelector("#paymentForm");
+  const cashFields = document.querySelector("#cashFields");
+  const cardFields = document.querySelector("#cardFields");
+  const cashReceived = document.querySelector("#cashReceived");
+  const cashChange = document.querySelector("#cashChange");
+  const cardOperationNumber = document.querySelector("#cardOperationNumber");
+  const CodeOperationVale = document.querySelector("#CodeOperationVale");
+  const paymentModal = document.querySelector("#paymentModal");
 
-  form.addEventListener('change', (event) => {
-    if (event.target.name !== 'paymentMethod') return;
+  form.addEventListener("change", (event) => {
+    if (event.target.name !== "paymentMethod") return;
 
     const method = form.paymentMethod.value;
 
-    cashFields.classList.toggle('hidden', method !== 'efectivo');
-    cardFields.classList.toggle('hidden', method !== 'tarjeta');
+    cashFields.classList.toggle("hidden", method !== "efectivo");
+    cardFields.classList.toggle("hidden", method !== "tarjeta");
+    valFields.classList.toggle("hidden", method !== "vales");
   });
 
-  cashReceived.addEventListener('input', () => {
+  cashReceived.addEventListener("input", () => {
     const total = getTotals().total;
     const received = Number(cashReceived.value || 0);
     const change = Math.max(received - total, 0);
@@ -330,7 +353,7 @@ function wirePayment() {
     cashChange.textContent = money(change);
   });
 
-  form.addEventListener('submit', async (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const totals = getTotals();
@@ -338,10 +361,10 @@ function wirePayment() {
 
     if (state.cart.length === 0) {
       showToast({
-        type: 'warning',
-        title: 'Venta vacía',
-        message: 'Agrega al menos un artículo antes de cobrar.',
-        container: paymentModal
+        type: "warning",
+        title: "Venta vacía",
+        message: "Agrega al menos un artículo antes de cobrar.",
+        container: paymentModal,
       });
 
       return;
@@ -351,18 +374,18 @@ function wirePayment() {
       method,
       cashReceived: 0,
       change: 0,
-      cardOperationNumber: '',
+      cardOperationNumber: "",
     };
 
-    if (method === 'efectivo') {
+    if (method === "efectivo") {
       payment.cashReceived = Number(cashReceived.value || 0);
 
       if (payment.cashReceived < totals.total) {
         showToast({
-          type: 'error',
-          title: 'Pago insuficiente',
-          message: 'El efectivo recibido no cubre el total de la venta.',
-          container: paymentModal
+          type: "error",
+          title: "Pago insuficiente",
+          message: "El efectivo recibido no cubre el total de la venta.",
+          container: paymentModal,
         });
 
         return;
@@ -371,15 +394,30 @@ function wirePayment() {
       payment.change = payment.cashReceived - totals.total;
     }
 
-    if (method === 'tarjeta') {
+    if (method === "tarjeta") {
       payment.cardOperationNumber = cardOperationNumber.value.trim();
 
       if (!payment.cardOperationNumber) {
         showToast({
-          type: 'warning',
-          title: 'Falta operación',
-          message: 'Captura el número de operación de la terminal.',
-          container: paymentModal
+          type: "warning",
+          title: "Falta operación",
+          message: "Captura el número de operación de la terminal.",
+          container: paymentModal,
+        });
+
+        return;
+      }
+    }
+
+    if (method === "vales") {
+      payment.CodeOperationVale = CodeOperationVale.value.trim();
+
+      if (!payment.CodeOperationVale) {
+        showToast({
+          type: "warning",
+          title: "Falta codigo",
+          message: "Ingresa el codigo del vale.",
+          container: paymentModal,
         });
 
         return;
@@ -396,12 +434,14 @@ function wirePayment() {
 
     clearCart();
     form.reset();
-    document.querySelector('#paymentModal').close();
+    document.querySelector("#paymentModal").close();
 
     showToast({
-      type: 'success',
-      title: 'Venta finalizada',
-      message: `Folio generado: ${sale.folio}`
+      type: "success",
+      title: "Venta finalizada",
+      message: `Folio generado: ${sale.folio}`,
     });
   });
 }
+
+// CAMARA
