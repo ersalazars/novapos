@@ -8,6 +8,7 @@ import { PaymentModal } from "../components/PaymentModal.js";
 import { getProducts, getCategories } from "../services/productService.js";
 import { getCustomers } from "../services/customerService.js";
 import { createSale } from "../services/saleService.js";
+import { showSaleTicket } from '../components/saleTicket.js';
 
 import {
   state,
@@ -431,6 +432,8 @@ function wirePayment() {
       payment,
       totals,
     });
+
+    showSaleTicket(sale);
 
     clearCart();
     form.reset();
