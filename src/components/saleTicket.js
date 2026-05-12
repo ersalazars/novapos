@@ -34,10 +34,10 @@ export function renderSaleTicket(sale) {
 
         <div class="ticket-header">
 
-          <h2>NOVA POS</h2>
+          <h2>ESDM POS</h2>
 
           <p class="store-name">
-            ESDM PUNTO DE VENTA
+            PUNTO DE VENTA
           </p>
 
           <p class="store-address">

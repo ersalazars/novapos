@@ -14,7 +14,7 @@ export function ProfileView() {
             </div>
 
             <div>
-              <p class="eyebrow">Nova POS - ESDM Punto de venta</p>
+              <p class="eyebrow">ESDM POS - Punto de venta</p>
               <h1>Selecciona perfil</h1>
               <p class="muted">
                 Elige la caja o usuario que iniciará la venta.

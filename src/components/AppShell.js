@@ -25,11 +25,11 @@ export function AppShell(content) {
         <div>
           <strong class="brand">
             <i class="fa-solid fa-bolt"></i>
-            Nova POS
+            ESDM POS
           </strong>
 
           <div class="muted muted-titulo">
-            ESDM Punto de venta
+            Plataforma punto de venta
           </div>
 
           <div class="muted muted-hora-titulo small-text">
