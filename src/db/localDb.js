@@ -8,3 +8,11 @@ db.version(1).stores({
   products: '++id, barcode, name, status, soldCount',
   sales: '++id, folio, createdAt, paymentMethod, customerId, profileId, total'
 });
+
+db.version(2).stores({
+  profiles: '++id, name, role',
+  customers: '++id, name, rfc',
+  products: '++id, barcode, name, status, soldCount',
+  sales: '++id, folio, createdAt, paymentMethod, customerId, profileId, total',
+  cashCuts: '++id, folio, createdAt, total, salesCount'
+});

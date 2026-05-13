@@ -18,6 +18,36 @@ export const articulos = [
     fecha: '2026-05-07',
     hora: '17:45:56',
     estado: 1
+  },
+  {
+    id: 3,
+    id_categoria: 2,
+    descripcion: 'ARROZ 1 KG',
+    id_usuario: 1,
+    usuario: 'DESARROLLO ESDM',
+    fecha: '2026-05-07',
+    hora: '18:00:00',
+    estado: 1
+  },
+  {
+    id: 4,
+    id_categoria: 3,
+    descripcion: 'COCA COLA 600 ML',
+    id_usuario: 1,
+    usuario: 'DESARROLLO ESDM',
+    fecha: '2026-05-07',
+    hora: '18:05:00',
+    estado: 1
+  },
+  {
+    id: 5,
+    id_categoria: 4,
+    descripcion: 'SABRITAS ORIGINAL 45 G',
+    id_usuario: 1,
+    usuario: 'DESARROLLO ESDM',
+    fecha: '2026-05-07',
+    hora: '18:10:00',
+    estado: 1
   }
 ];
 
@@ -56,6 +86,27 @@ export const articulosPrecios = [
     cant_minIMA: 11,
     cant_maxIMA: 50,
     precio_unitario: 20.00
+  },
+  {
+    id_precio: 6,
+    id_articulo: 3,
+    cant_minIMA: 1,
+    cant_maxIMA: 20,
+    precio_unitario: 28.00
+  },
+  {
+    id_precio: 7,
+    id_articulo: 4,
+    cant_minIMA: 1,
+    cant_maxIMA: 20,
+    precio_unitario: 18.00
+  },
+  {
+    id_precio: 8,
+    id_articulo: 5,
+    cant_minIMA: 1,
+    cant_maxIMA: 20,
+    precio_unitario: 17.00
   }
 ];
 
@@ -71,6 +122,24 @@ export const articulosAlmacenes = [
     id_articulo: 2,
     id_almacen: 1,
     stock_actual: 200
+  },
+  {
+    id_relacion: 3,
+    id_articulo: 3,
+    id_almacen: 1,
+    stock_actual: 150
+  },
+  {
+    id_relacion: 4,
+    id_articulo: 4,
+    id_almacen: 1,
+    stock_actual: 300
+  },
+  {
+    id_relacion: 5,
+    id_articulo: 5,
+    id_almacen: 1,
+    stock_actual: 120
   }
 ];
 

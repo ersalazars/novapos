@@ -110,9 +110,11 @@ async function wirePosView() {
       const productButton = event.target.closest("[data-add-product]");
 
       if (categoryButton) {
-        selectedCategory = Number(categoryButton.dataset.categoryId);
-        setSearch("");
+        selectedCategory = Number(categoryButton.getAttribute("data-category-id"));
+
         document.querySelector("#productSearch").value = "";
+        state.search = "";
+
         await renderProductsByCategory();
         return;
       }
@@ -239,6 +241,9 @@ async function renderProductsByCategory() {
     onlyBestSellers: false,
   });
 
+  // console.log("CATEGORY:", selectedCategory);
+  // console.log("PRODUCTS:", productsCache);
+
   document.querySelector("#productsTitle").innerHTML = `
     <div class="products-header-inline">
 
@@ -254,10 +259,12 @@ async function renderProductsByCategory() {
     </div>
   `;
 
-  document.querySelector("#productGridContainer").innerHTML = ProductGrid(
-    productsCache,
-    state.activeProfile?.id_almacen || 1,
-  );
+  document.querySelector("#productGridContainer").innerHTML = productsCache.length
+    ? ProductGrid(
+        productsCache,
+        state.activeProfile?.id_almacen || 1,
+      )
+    : `<div class="empty-state">No hay productos en esta categoría.</div>`;
 }
 
 async function renderSearchResults() {

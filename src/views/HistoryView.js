@@ -1,6 +1,8 @@
 import { AppShell } from '../components/AppShell.js';
 import { getSales } from '../services/saleService.js';
 import { dateTime, money } from '../utils/format.js';
+import { createCashCut } from '../services/cashCutService.js';
+import { showCashCutModal } from '../components/CashCutModal.js';
 
 export function HistoryView() {
   return {
@@ -11,6 +13,10 @@ export function HistoryView() {
             <h1>Historial de ventas</h1>
             <p class="muted">Ventas guardadas localmente en IndexedDB.</p>
           </div>
+          <button id="btnCashCut" class="btn-primary">
+            <i class="fa-solid fa-cash-register"></i>
+            Corte de caja
+          </button>
         </div>
 
         <div id="salesHistory" class="sales-history">
@@ -19,8 +25,19 @@ export function HistoryView() {
       </section>
     `),
     afterRender() {
-      const container = document.querySelector('#salesHistory');
 
+      const btnCashCut = document.querySelector('#btnCashCut');
+      btnCashCut?.addEventListener('click', async () => {
+        const result = await createCashCut();
+        if (!result.ok) {
+          alert(result.msg);
+          return;
+        }
+
+        showCashCutModal(result.cashCut);
+      });
+
+      const container = document.querySelector('#salesHistory');
       getSales().then((sales) => {
         if (!sales.length) {
           container.innerHTML = `<div class="empty-state">Todavía no hay ventas registradas.</div>`;

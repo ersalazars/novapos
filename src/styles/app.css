@@ -1155,3 +1155,42 @@ p {
   color: #9ca3af;
   font-size: .75rem;
 }
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-primary {
+  border: none;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  padding: .9rem 1.2rem;
+  border-radius: 1rem;
+  font-size: .95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, .18);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, .25);
+}
+
+.btn-primary:active {
+  transform: scale(.98);
+}
+
+.btn-primary i {
+  font-size: .95rem;
+}
